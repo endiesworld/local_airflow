@@ -10,12 +10,13 @@ default_args = {
 }
 
 with DAG(
-    dag_id = 'multi_task_ops_2',
-    description = 'improved multiple dags operations',
+    dag_id = 'exter_file_task_ops_2',
+    description = 'multiple dags operations wuth exter script file',
     default_args = default_args,
     start_date = days_ago(1),
     schedule_interval= timedelta(days=1),
-    tags = ['upstream', 'downstream']
+    tags = ['bitshift', 'external'],
+    template_searchpath = '/home/endie/Projects/Data_Engineering/airflow_prject_3/dags/bash_scripts'
 ) as dag:
 
     task_1 = BashOperator(
@@ -55,8 +56,8 @@ with DAG(
         """,
     )
 
-task_1.set_downstream(task_2)
-task_1.set_downstream(task_3)
+task_1 >> (task_2)
+task_1 >> (task_3)
 
-task_4.set_downstream(task_2)
-task_4.set_downstream(task_3)
+task_4 << (task_2)
+task_4 << (task_3)

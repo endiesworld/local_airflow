@@ -10,12 +10,12 @@ default_args = {
 }
 
 with DAG(
-    dag_id = 'multi_task_ops_2',
-    description = 'improved multiple dags operations',
+    dag_id = 'bitshift_multi_task_ops_2',
+    description = 'improved multiple dags operations mwith bitshift',
     default_args = default_args,
     start_date = days_ago(1),
     schedule_interval= timedelta(days=1),
-    tags = ['upstream', 'downstream']
+    tags = ['bitshift']
 ) as dag:
 
     task_1 = BashOperator(
@@ -55,8 +55,8 @@ with DAG(
         """,
     )
 
-task_1.set_downstream(task_2)
-task_1.set_downstream(task_3)
+task_1 >> (task_2)
+task_1 >> (task_3)
 
-task_4.set_downstream(task_2)
-task_4.set_downstream(task_3)
+task_4 << (task_2)
+task_4 << (task_3)
