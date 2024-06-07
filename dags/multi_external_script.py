@@ -21,43 +21,41 @@ with DAG(
 
     task_1 = BashOperator(
         task_id = 'Task_1',
-        bash_command= """
-            echo TASK_1 has started!
-            
-            for i in {1..10}
-            do
-                echo TASK_1 printing $i
-            done
-            
-            echo TASK_1 has finished!
-        """
+        bash_command= "taskA.sh"
     )
     
     task_2 = BashOperator(
         task_id = 'Task_2',
-        bash_command= """
-            echo TASK_2 has started!
-            sleep 4
-            echo TASK_2 has finished!
-        """,
-    )
-    
-    task_4 = BashOperator(
-        task_id = 'Task_4',
-        bash_command= "echo TASK_4 has finished!",
+        bash_command= "taskB.sh",
     )
     
     task_3 = BashOperator(
         task_id = 'Task_3',
-        bash_command= """
-            echo TASK_3 has started!
-            sleep 15
-            echo TASK_3 has finished!
-        """,
+        bash_command= "taskC.sh",
+    )
+    
+    task_4 = BashOperator(
+        task_id = 'Task_4',
+        bash_command= "taskD.sh",
+    )
+    
+    task_5 = BashOperator(
+        task_id = 'Task_5',
+        bash_command= "taskE.sh",
+    )
+    
+    task_6 = BashOperator(
+        task_id = 'Task_6',
+        bash_command= "taskF.sh",
+    )
+    
+    task_7 = BashOperator(
+        task_id = 'Task_7',
+        bash_command= "taskG.sh",
     )
 
-task_1 >> (task_2)
-task_1 >> (task_3)
+task_1 >> task_2 >> task_5
 
-task_4 << (task_2)
-task_4 << (task_3)
+task_1 >> task_3 >> task_6
+
+task_1 >> task_4 >> task_7
