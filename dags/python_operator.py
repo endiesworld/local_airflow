@@ -1,3 +1,4 @@
+import time
 from datetime import datetime, timedelta
 from airflow.utils.dates import days_ago
 
@@ -9,8 +10,21 @@ default_args = {
     'owner': 'Emmanuel'
 }
 
-def print_function():
-    print('This should be the simplest python operator ever!')
+def task_a():
+    print('Task A executed!')
+    
+
+def task_b():
+    time.sleep(5)
+    print('Task B executed!')
+    
+    
+def task_c():
+    print('Task C executed!')
+    
+    
+def task_d():
+    print('Task D executed!')
 
 with DAG(
     dag_id = 'execute_python_operators',
@@ -21,11 +35,24 @@ with DAG(
     tags = ['simple', 'python'],
 ) as dag:
 
-    task_1 = PythonOperator(
-        task_id = 'Task_1',
-        python_callable= print_function
+    taskA = PythonOperator(
+        task_id = 'taskA',
+        python_callable= task_a
     )
     
+    taskB = PythonOperator(
+        task_id = 'taskB',
+        python_callable= task_b
+    )
     
+    taskC = PythonOperator(
+        task_id = 'taskC',
+        python_callable= task_c
+    )
+    
+    taskD = PythonOperator(
+            task_id = 'taskD',
+            python_callable= task_d
+        )
 
-task_1 
+taskA >> [taskB, taskC] >> taskD
