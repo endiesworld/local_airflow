@@ -31,6 +31,7 @@ with DAG(
                     id INTEGER PRIMARY KEY,
                     name VARCHAR(255) NOT NULL,
                     age INTEGER NOT NULL,
+                    city VARCHAR(50),
                     is_active BOOLEAN DEFAULT true,
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 );
@@ -41,11 +42,13 @@ with DAG(
     insert_values_1 = SqliteOperator(
         task_id = 'insert_values_1',
         sql = r"""
-            INSERT INTO users (name, age) VALUES
-                ('Emmanuel', 36),
-                ('Adaobi', 31),
-                ('Chidubem', 12)
-                ('Sochikamuma', 4)
+            INSERT INTO users (name, age, is_active) VALUES
+                ('Emmanuel', 36, true),
+                ('Adaobi', 31, true),
+                ('Chidubem', 12, true),
+                ('Sochikamuma', 4, true),
+                ('Chukwudalu', 0, true),
+                ('Somtochi', 0, false)
         """,
         sqlite_conn_id= 'my_sqlite_conn',
     )
@@ -53,26 +56,35 @@ with DAG(
     insert_values_2 = SqliteOperator(
         task_id = 'insert_values_2',
         sql = r"""
-            INSERT INTO users (name, age) VALUES
-                ('Amarachi', 34),
-                ('Ugochukwu', 32),
-                ('Chinaenye', 28)
-                ('Favour', 23)
+            INSERT INTO users (name, age, is_active) VALUES
+                ('Amarachi', 34, true),
+                ('Ugochukwu', 32, true),
+                ('Chinaenye', 28, true),
+                ('Favour', 23, true),
+                ('Lucy', 28, true),
+                ('Ugo_nephew', 0, false)
         """,
         sqlite_conn_id= 'my_sqlite_conn',
     )
     
-    insert_values_2 = SqliteOperator(
-        task_id = 'insert_values_2',
-        sql = r"""
-            INSERT INTO users (name, age) VALUES
-                ('Amarachi', 34),
-                ('Ugochukwu', 32),
-                ('Chinaenye', 28)
-                ('Favour', 23)
-        """,
-        sqlite_conn_id= 'my_sqlite_conn',
+    delete_values = SqliteOperator(
+        task_id = 'delete_values',
+        sql = r""" DELETE FROM users WHERE is_active = 0 """ ,
+        sqlite_conn_id= 'my_sqlite_conn'
     )
+    
+    update_values = SqliteOperator(
+        task_id = 'update_values',
+        sql = r""" UPDATE users SET city = 'New Jersey' WHERE name='Emmanuel' """,
+        sqlite_conn_id= 'my_sqlite_conn'
+    )
+    
+    update_values_2 = SqliteOperator(
+        task_id = 'update_values_2',
+        sql = r""" UPDATE users SET city = 'Lagos' WHERE name <> 'Emmanuel' """,
+        sqlite_conn_id= 'my_sqlite_conn'
+    )
+        
     
     display_result = SqliteOperator(
         task_id = 'display_result',
@@ -82,5 +94,5 @@ with DAG(
     )
     
     
-create_table >> [insert_values_1, insert_values_2] >> display_result
+create_table >> [insert_values_1, insert_values_2] >> delete_values >> [update_values, update_values_2] >> display_result
 
