@@ -1,9 +1,7 @@
 from pathlib import Path
-from random import choice
 
 import pandas as pd
 
-from datetime import datetime, timedelta
 from airflow.utils.dates import days_ago
 
 from airflow import DAG
@@ -40,11 +38,11 @@ def remove_null_values_(**kwargs):
 
 def determine_branch_():
     transform_action = Variable.get('transform_action', None)
-    
-    if transform_action.startswith('filter'):
-        return transform_action
-    elif transform_action == 'groupby_regionsmoker':
-        return 'groupby_regionsmoker'
+    if transform_action:
+        if transform_action.startswith('filter'):
+            return transform_action
+        elif transform_action == 'groupby_region_smoker':
+            return 'groupby_region_smoker'
     
     
 def filter_by_southwest_(ti):
@@ -158,6 +156,7 @@ read_csv_file >> remove_null_values >> determine_branch >> [
     filter_by_southwest, 
     filter_by_southeast, 
     filter_by_northwest,
-    filter_by_northeast
+    filter_by_northeast,
+    groupby_region_smoker
     ]
 
