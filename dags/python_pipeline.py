@@ -1,9 +1,7 @@
-import time
 from pathlib import Path
 
 import pandas as pd
 
-from datetime import datetime, timedelta
 from airflow.utils.dates import days_ago
 
 from airflow import DAG
