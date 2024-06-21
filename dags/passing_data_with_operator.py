@@ -1,6 +1,4 @@
-import time
 import json
-from datetime import datetime, timedelta
 
 from airflow.utils.dates import days_ago
 
@@ -12,7 +10,7 @@ default_args ={
     'owner': 'Emmanuel',
 }
 
-def get_order_prices(**kwargs):
+def get_order_prices_(**kwargs):
     ti = kwargs["ti"]
     
     order_price_data = {
@@ -28,7 +26,7 @@ def get_order_prices(**kwargs):
     ti.xcom_push('order_price_data', order_price_string)
     
     
-def compute_sum(**kwargs):
+def compute_sum_(**kwargs):
     ti = kwargs["ti"]
     
     order_price_string = ti.xcom_pull(task_ids='get_order_prices', key='order_price_data')
@@ -44,7 +42,7 @@ def compute_sum(**kwargs):
     ti.xcom_push('total_price', total)
     
     
-def compute_average(**kwargs):
+def compute_average_(**kwargs):
     ti = kwargs["ti"]
     
     order_price_string = ti.xcom_pull(task_ids='get_order_prices', key='order_price_data')
@@ -64,7 +62,7 @@ def compute_average(**kwargs):
     ti.xcom_push('average_price', average)
     
     
-def display_result(**kwargs):
+def display_result_(**kwargs):
     ti = kwargs["ti"]
     
     total = ti.xcom_pull(task_ids = 'compute_sum', key='total_price')
@@ -72,3 +70,34 @@ def display_result(**kwargs):
     
     print("Total price of goods {total}".format(total=total))
     print("Average price of goods {average}".format(average=average))
+    
+    
+with DAG(
+    dag_id = 'cross_task_comms_ops',
+    description = 'Xcom with operators',
+    default_args = default_args,
+    start_date = days_ago(1),
+    schedule_interval = '@once',
+    tags = ['xcom','python', 'operators']
+) as dag:
+    get_order_prices = PythonOperator(
+        task_id = 'get_order_prices',
+        python_callable = get_order_prices_
+    )
+    
+    compute_sum = PythonOperator(
+        task_id = 'compute_sum',
+        python_callable = compute_sum_
+    )
+    
+    compute_average = PythonOperator(
+        task_id = 'compute_average',
+        python_callable = compute_average_
+    )
+    
+    display_result = PythonOperator(
+        task_id = 'display_result',
+        python_callable = display_result_
+    )
+    
+get_order_prices >> [compute_sum, compute_average] >> display_result
