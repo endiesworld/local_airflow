@@ -41,17 +41,17 @@ def remove_null_values_(**kwargs):
 def determine_branch_():
     transform_action = Variable.get('transform', None)
     if transform_action:
-        if transform_action == 'filter_fuel':
+        if transform_action == 'filter_petrol':
             return 'filter_petrol_task'
         elif transform_action == 'filter_transmission':
             return 'filter_transmission_task'
     
     
-def filter_fuel_(ti):
+def filter_petrol_(ti):
     json_data = ti.xcom_pull(key='my_clean_car_csv')
     df = pd.read_json(json_data)
     
-    region_df = df[df['Fuel_Type']== 'Petrol']
+    region_df = df[df['petrol_Type']== 'Petrol']
     
     region_df.to_csv(OUTPUT_PATH.joinpath('petrol_car_data.csv'), index=False)
     
@@ -75,29 +75,29 @@ with DAG(
     tags = ['python', 'operators', 'branching'],
 ) as dag:
     read_csv_file = PythonOperator(
-        task_id = 'read_csv_file',
+        task_id = 'read_csv_file_task',
         python_callable= read_csv_file_,
     )
         
     remove_null_values = PythonOperator(
-        task_id = 'remove_null_values',
+        task_id = 'remove_null_values_task',
         python_callable = remove_null_values_
     )    
     
     determine_branch = BranchPythonOperator(
-        task_id = 'determine_branch',
+        task_id = 'determine_branch_task',
         python_callable = determine_branch_
     )
     
-    filter_fuel = PythonOperator(
-        task_id = 'filter_fuel',
-        python_callable = filter_fuel_
+    filter_petrol = PythonOperator(
+        task_id = 'filter_petrol_task',
+        python_callable = filter_petrol_
     ) 
     
     filter_transmission = PythonOperator(
-        task_id = 'filter_transmission',
+        task_id = 'filter_transmission_task',
         python_callable = filter_transmission_
     ) 
         
-read_csv_file >> remove_null_values >> determine_branch >> [filter_fuel, filter_transmission]
+read_csv_file >> remove_null_values >> determine_branch >> [filter_petrol, filter_transmission]
  
