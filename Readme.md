@@ -19,3 +19,7 @@
 >> airflow 
 >> cd /home/endie/airflow
 >> code .
+
+## Conecting to a postgres database
+>> pip install psycopg2-binary
+>> pip install apache-airflow-providers-postgres
