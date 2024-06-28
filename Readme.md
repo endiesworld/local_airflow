@@ -23,3 +23,11 @@
 ## Conecting to a postgres database
 >> pip install psycopg2-binary
 >> pip install apache-airflow-providers-postgres
+
+## Using a postgres database as Airflow metadata store
+>> connect to your postgres database
+>> CREATE DATABASE airflow_db;
+>> switch to airflow.cfg and do the followings:
+    >> change the 'executor' value from 'SequentialExecutor' to any other Executor that allows parallelism (LocalExecutor, CeleryExecutor, KubernetesExecutor)
+    >> change the 'sql_alchemy_conn' to your postgres or mysql connection value i.e
+        sql_alchemy_conn = postgressql://postgres@localhost:5432/airflow_db

@@ -1,13 +1,28 @@
-from airflow.utils.dates import days_ago
+import csv
+from pathlib import Path
 
 from airflow import DAG
-
+from airflow.utils.dates import days_ago
 from airflow.providers.postgres.operators.postgres import PostgresOperator
+from airflow.operators.python import PythonOperator
 
 default_args = {
     'owner': 'Emmanuel'
 }
 
+WORK_DIR = Path('/home/endie/Projects/Data_Engineering/airflow_prject_3')
+
+def saving_to_csv_(ti):
+    filter_data = ti.xcom_pull(task_ids='filtering_customers')
+    file_path = WORK_DIR.joinpath('output', 'filtered_customer_data.csv')
+    with open(file_path, 'w', newline='') as file:
+
+        writer = csv.writer(file)
+
+        writer.writerow(['Name', 'Product', 'Price'])
+
+        for row in filter_data:
+            writer.writerow(row)
 
 with DAG(
     dag_id = 'postgres_pipeline',
@@ -59,8 +74,13 @@ with DAG(
         ''',
         parameters = {'lower_bound': 5, 'upper_bound': 9}
     )
+    
+    saving_to_csv = PythonOperator(
+        task_id='saving_to_csv',
+        python_callable=saving_to_csv_
+    )
 
     create_table_customers >> create_table_customer_purchases >> \
         insert_customers >> insert_customer_purchases >> \
-        joining_table >> filtering_customers
+        joining_table >> filtering_customers >> saving_to_csv
 
