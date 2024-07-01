@@ -24,6 +24,14 @@
 >> pip install psycopg2-binary
 >> pip install apache-airflow-providers-postgres
 
+## Running postgres docker container
+>> docker pull postgres
+>> docker run --name my_postgres -e POSTGRES_PASSWORD=mysecretpassword -d -p 5432:5432 postgres
+>> docker exec -it my_postgres bash
+>> psql -U postgres
+>> CREATE DATABASE mydatabase;
+>> \c mydatabase
+
 ## Using a postgres database as Airflow metadata store
 >> connect to your postgres database
 >> CREATE DATABASE airflow_db;
