@@ -38,4 +38,13 @@
 >> switch to airflow.cfg and do the followings:
     >> change the 'executor' value from 'SequentialExecutor' to any other Executor that allows parallelism (LocalExecutor, CeleryExecutor, KubernetesExecutor)
     >> change the 'sql_alchemy_conn' to your postgres or mysql connection value i.e
-        sql_alchemy_conn = postgressql://postgres@localhost:5432/airflow_db
+        sql_alchemy_conn = postgressql://postgres:mysecretpassword@localhost:5432/airflow_db
+>> Stop all airflow instances
+>> airflow db init <!-- Reinitialize the database, this empties your users list -->
+>> airflow users create \
+    -e endiesworld@gmail.com \
+    -f emmanuel \
+    -l okoro \
+    -p my_password \
+    -r Admin \
+    -u emmanuel.user
