@@ -1,7 +1,7 @@
 from airflow import DAG
 from airflow.utils.dates import days_ago
 from airflow.operators.python import PythonOperator
-from airflow.sensors.sql_sensor import SqlSensor
+from airflow.providers.common.sql.sensors.sql import SqlSensor
 from airflow.providers.postgres.operators.postgres import PostgresOperator
 
 
@@ -73,4 +73,16 @@ with DAG(
     [create_laptops_table, create_premium_laptops_table] >> \
     wait_for_premium_laptops >> \
     insert_data_into_premium_laptops_table >> delete_laptop_data
+    
+    """
+        INSERT INTO laptops (id, company, product, type_name, price_euros) 
+        VALUES(1,'Dell','Inspiron 3567','Notebook',485);
+
+        # Switch to the UI and show that it is still waiting
+
+        # Back to psql
+
+        INSERT INTO laptops (id, company, product, type_name, price_euros)
+        VALUES(2,'Apple','Macbook','Notebook',1103);
+    """
 
