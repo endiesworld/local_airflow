@@ -26,7 +26,7 @@
 
 ## Running postgres docker container
 >> docker pull postgres
->> docker run --name my_postgres -e POSTGRES_PASSWORD=  -d -p 5432:5432 postgres
+>> docker run --name my_postgres -e POSTGRES_PASSWORD=mysecretpassword -d -p 5432:5432 postgres
 >> docker exec -it my_postgres bash
 >> psql -U postgres
 >> CREATE DATABASE mydatabase;
